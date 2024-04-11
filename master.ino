@@ -6,39 +6,21 @@
 int myArray[ARRAY_SIZE];
 #define MAX_ARRAY_SIZE 62
 
-// slave ESP32's MAC address
-uint8_t mac1[] = { 0xF4, 0x12, 0xFA, 0x97, 0xDB, 0x10 };
-uint8_t mac2[] = { 0x70, 0x04, 0x1D, 0xCD, 0x41, 0x60 };
-uint8_t mac3[] = { 0xF4, 0x12, 0xFA, 0x97, 0x96, 0xD0 };
-uint8_t mac4[] = { 0x70, 0x04, 0x1D, 0xCE, 0x28, 0x54 };
-uint8_t mac5[] = { 0xF4, 0x12, 0xFA, 0x97, 0x97, 0x94 };
 
 String readString;
 
-void sendData1(const uint8_t* data, int len) {
-  Serial.println("Sending data to 1");
-  esp_now_send(mac1, data, len);
-  //  delay(100);
-}
-void sendData2(const uint8_t* data, int len) {
-  Serial.println("Sending data to 2");
-  esp_now_send(mac2, data, len);
-  //  delay(100);
-}
-void sendData3(const uint8_t* data, int len) {
-  Serial.println("Sending data to 3");
-  esp_now_send(mac3, data, len);
-  //  delay(100);
-}
-void sendData4(const uint8_t* data, int len) {
-  Serial.println("Sending data to 4");
-  esp_now_send(mac4, data, len);
-  //  delay(100);
-}
-void sendData3(const uint8_t* data, int len) {
-  Serial.println("Sending data to 5");
-  esp_now_send(mac5, data, len);
-  //  delay(100);
+// slave ESP32's MAC address
+uint8_t macArr[3][6] = {
+  {0xF4, 0x12, 0xFA, 0x97, 0xDB, 0x10},
+  {0x70, 0x04, 0x1D, 0xCD, 0x41, 0x60},
+  {0x70, 0x04, 0x1D, 0xCE, 0x28, 0x54}
+};
+
+int currEsp = 0;
+
+void sendData(const uint8_t *data, int len, int currEsp){
+  Serial.println("Sending data to "+(currEsp));
+  esp_now_send(macArr[currEsp], data, len);
 }
 
 // Callback function for receiving data
@@ -107,7 +89,7 @@ void setup() {
   // Add slave ESP32
   esp_now_peer_info_t peerInfo;
   memset(&peerInfo, 0, sizeof(peerInfo));
-  memcpy(peerInfo.peer_addr, mac1, 6);
+  memcpy(peerInfo.peer_addr, macArr[0], 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
@@ -116,7 +98,7 @@ void setup() {
   }
   // Add slave ESP32
   memset(&peerInfo, 0, sizeof(peerInfo));
-  memcpy(peerInfo.peer_addr, mac2, 6);
+  memcpy(peerInfo.peer_addr, macArr[1], 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
@@ -125,25 +107,7 @@ void setup() {
   }
   // Add slave ESP32
   memset(&peerInfo, 0, sizeof(peerInfo));
-  memcpy(peerInfo.peer_addr, mac3, 6);
-  peerInfo.channel = 0;
-  peerInfo.encrypt = false;
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add peer");
-    return;
-  }
-    // Add slave ESP32
-  memset(&peerInfo, 0, sizeof(peerInfo));
-  memcpy(peerInfo.peer_addr, mac4, 6);
-  peerInfo.channel = 0;
-  peerInfo.encrypt = false;
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add peer");
-    return;
-  }
-    // Add slave ESP32
-  memset(&peerInfo, 0, sizeof(peerInfo));
-  memcpy(peerInfo.peer_addr, mac5, 6);
+  memcpy(peerInfo.peer_addr, macArr[2], 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
@@ -160,15 +124,11 @@ void loop() {
   }
   if (readString.length() > 0) {
     // Send data to the master
-    sendData1((const uint8_t*)readString.c_str(), readString.length());
+    sendData((const uint8_t*)readString.c_str(), readString.length(), 1);
     delay(10);
-    sendData2((const uint8_t*)readString.c_str(), readString.length());
+    sendData((const uint8_t*)readString.c_str(), readString.length(), 2);
     delay(10);
-    sendData3((const uint8_t*)readString.c_str(), readString.length());
-    Serial.println(readString);
-    sendData4((const uint8_t*)readString.c_str(), readString.length());
-    Serial.println(readString);
-    sendData5((const uint8_t*)readString.c_str(), readString.length());
+    sendData((const uint8_t*)readString.c_str(), readString.length(), 3);
     Serial.println(readString);
     delay(10);
     readString = "";
