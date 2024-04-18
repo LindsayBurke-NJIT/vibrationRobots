@@ -19,8 +19,10 @@ uint8_t macArr[3][6] = {
 int currEsp = 0;
 
 void sendData(const uint8_t *data, int len, int currEsp){
-  Serial.println("Sending data to "+(currEsp));
-  esp_now_send(macArr[currEsp], data, len);
+  Serial.print(F("Sending data to "));
+  Serial.println(currEsp);
+  //Serial.println("Sending data to "+(currEsp));
+  esp_now_send(macArr[currEsp-1], data, len);
 }
 
 // Callback function for receiving data
@@ -72,7 +74,15 @@ void OnDataRecv(const uint8_t* mac, const uint8_t* data, int len) {
 }
 
 void setup() {
+  
   Serial.begin(115200);
+
+  while(!Serial.available())
+  {// do nothing
+  }
+  while(Serial.available())
+  {Serial.read();
+  }
 
   // Initialize WiFi
   WiFi.mode(WIFI_STA);
@@ -96,6 +106,9 @@ void setup() {
     Serial.println("Failed to add peer");
     return;
   }
+  else
+  {Serial.println("Added Peer 0");
+  }
   // Add slave ESP32
   memset(&peerInfo, 0, sizeof(peerInfo));
   memcpy(peerInfo.peer_addr, macArr[1], 6);
@@ -105,6 +118,9 @@ void setup() {
     Serial.println("Failed to add peer");
     return;
   }
+  else
+  {Serial.println("Added Peer 1");
+  }
   // Add slave ESP32
   memset(&peerInfo, 0, sizeof(peerInfo));
   memcpy(peerInfo.peer_addr, macArr[2], 6);
@@ -113,6 +129,9 @@ void setup() {
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add peer");
     return;
+  }
+  else
+  {Serial.println("Added Peer 2");
   }
 }
 
