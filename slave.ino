@@ -14,7 +14,8 @@ const int motorRunTime = 3000;  // Motor run time - 2x IMU stabilization time
 // ||------------------------------------------------|| Networking
 // master ESP32's MAC address
 uint8_t masterMacAddress[] = { 0xF4, 0x12, 0xFA, 0x97, 0xC5, 0x98};
-String UUID = "1";
+String UUID = "3";
+// char UUID = "1";
 
 // ||------------------------------------------------|| Data storage
 // const int MAX_READINGS = 150;  // Maximum number of readings to store
@@ -125,7 +126,7 @@ void setup() {
   }
 
 
-  Wire.begin();
+  /*Wire.begin();
 
   if (!imu.init()) {
     Serial.println("Failed to detect and initialize IMU!");
@@ -135,7 +136,7 @@ void setup() {
 
   pinMode(motorPin, OUTPUT);
   stopMotors();
-  runMotorDiagnostic();
+  runMotorDiagnostic();*/
 
   Serial.println("Arduino Ready");
 }
