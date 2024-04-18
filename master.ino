@@ -96,42 +96,21 @@ void setup() {
   // Register callback function
   esp_now_register_recv_cb(OnDataRecv);
 
-  // Add slave ESP32
+
+  //Add ESP slaves from macArray
   esp_now_peer_info_t peerInfo;
-  memset(&peerInfo, 0, sizeof(peerInfo));
-  memcpy(peerInfo.peer_addr, macArr[0], 6);
-  peerInfo.channel = 0;
-  peerInfo.encrypt = false;
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add peer");
-    return;
-  }
-  else
-  {Serial.println("Added Peer 0");
-  }
-  // Add slave ESP32
-  memset(&peerInfo, 0, sizeof(peerInfo));
-  memcpy(peerInfo.peer_addr, macArr[1], 6);
-  peerInfo.channel = 0;
-  peerInfo.encrypt = false;
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add peer");
-    return;
-  }
-  else
-  {Serial.println("Added Peer 1");
-  }
-  // Add slave ESP32
-  memset(&peerInfo, 0, sizeof(peerInfo));
-  memcpy(peerInfo.peer_addr, macArr[2], 6);
-  peerInfo.channel = 0;
-  peerInfo.encrypt = false;
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add peer");
-    return;
-  }
-  else
-  {Serial.println("Added Peer 2");
+  for(int macIndex=0;macIndex<sizeof(macArr)/sizeof(uint8_t);macIndex++){
+      memset(&peerInfo, 0, sizeof(peerInfo));
+      memcpy(peerInfo.peer_addr, macArr[macIndex], 6);
+      peerInfo.channel = 0;
+      peerInfo.encrypt = false;
+      if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+        Serial.println(F("Failed to add peer"));
+        return;
+      }
+      else
+      {Serial.println(F("Added Peer "+(macIndex+1)));
+      }
   }
 }
 
@@ -158,8 +137,6 @@ void loop() {
   //
   //    // Convert sensor data to a string
   //    char dataString = char(selectID);
-
-
 
   // Send data to the master
   //    sendData1((const uint8_t*)&dataString, sizeof(dataString));
