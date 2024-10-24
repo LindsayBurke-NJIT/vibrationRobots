@@ -16,7 +16,7 @@ uint8_t macArr[3][6] = {
   {0x70, 0x04, 0x1D, 0xCE, 0x28, 0x54} //uuid3
 };
 
-int currEsp = 0;
+int currEsp = 1;
 
 void sendData(const uint8_t *data, int len, int currEsp){
   Serial.print(F("Sending data to "));
